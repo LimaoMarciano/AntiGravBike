@@ -8,6 +8,7 @@ public class Engine : MonoBehaviour {
     public float maxPower = 20.0f;
 
     private Rigidbody rb;
+    public float input = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -16,8 +17,6 @@ public class Engine : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-
-        float input = Input.GetAxis("Vertical");
 
         if (input != 0)
         {
