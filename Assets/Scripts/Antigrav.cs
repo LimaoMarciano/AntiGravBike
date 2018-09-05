@@ -13,7 +13,6 @@ public class Antigrav : MonoBehaviour {
     public Rigidbody rb;
     private Material mat;
     public Color pulseColor = Color.yellow;
-    private float efficiency = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -21,7 +20,7 @@ public class Antigrav : MonoBehaviour {
 	}
 
     // Update is called once per frame
-    void FixedUpdate () {
+    void FixedUpdate () { 
 
         RaycastHit hit;
         Ray ray = new Ray(transform.position, -transform.up);
