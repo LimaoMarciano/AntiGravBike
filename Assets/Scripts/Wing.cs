@@ -5,6 +5,8 @@ using UnityEngine;
 public class Wing : MonoBehaviour {
 
 
+    public Rigidbody rb;
+
     public AnimationCurve liftCoefficientCurve;
     public float wingArea = 1.0f;
     public float wingAspectRatio = 1.0f;
@@ -14,6 +16,7 @@ public class Wing : MonoBehaviour {
     private Vector3 initialRotation;
     private Vector3 velocity;
     private Vector3 lastPosition;
+    private float lastLift = 0;
 
     private Vector3 localVelocity;
     public Vector3 LocalVelocity
@@ -46,6 +49,8 @@ public class Wing : MonoBehaviour {
         Vector3 velocity = (transform.position - lastPosition + wind) / Time.deltaTime;
         lastPosition = transform.position;
 
+        //velocity = rb.GetPointVelocity(transform.position);
+
         localVelocity = transform.InverseTransformDirection(velocity);
         chordAirVelocity = new Vector3(0, localVelocity.y, localVelocity.z);
         angleOfAttack = Vector3.SignedAngle(Vector3.forward, chordAirVelocity, Vector3.right);
@@ -53,13 +58,16 @@ public class Wing : MonoBehaviour {
         float cl = liftCoefficientCurve.Evaluate(angleOfAttack);
         float lift = 0.5f * localVelocity.sqrMagnitude * wingArea * cl;
 
+
+
         //Induced drag coefficient
         float dci = (cl * cl) / (Mathf.PI * wingAspectRatio);
 
-        Vector3 liftDirection = Vector3.Cross(velocity, transform.right).normalized;
+        //Vector3 liftDirection = Vector3.Cross(velocity, transform.right).normalized;
+        Vector3 liftDirection = transform.up;
         liftForce = lift * liftDirection;
 
-        Debug.DrawRay(transform.position, liftForce * 0.01f, Color.blue);
+        Debug.DrawRay(transform.position, liftForce * 0.1f, Color.blue);
         Debug.DrawRay(transform.position, velocity * 0.1f, Color.cyan);
 
         return liftForce;

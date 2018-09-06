@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bike : MonoBehaviour {
 
     public Rigidbody rb;
+    public Transform centerOfMass;
 
     public Engine engine;
     public Wing[] wings;
@@ -15,7 +16,7 @@ public class Bike : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        rb.centerOfMass = transform.InverseTransformPoint(centerOfMass.position);
 	}
 	
 	// Update is called once per frame
