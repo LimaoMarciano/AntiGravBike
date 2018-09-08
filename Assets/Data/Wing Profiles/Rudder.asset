@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1b67787556aa674091454fb7f05ab6d, type: 3}
+  m_Name: Rudder
+  m_EditorClassIdentifier: 
+  wingArea: 2
+  wingSpan: 1
+  rotationAngle: 20
+  liftCoefficientCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -60
+      value: 0
+      inSlope: -0.07029585
+      outSlope: -0.07029585
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.117536925
+    - serializedVersion: 3
+      time: -30
+      value: -0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.06749573
+      outSlope: 0.06749573
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.068017386
+    - serializedVersion: 3
+      time: 30
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 60
+      value: 0
+      inSlope: -0.057035863
+      outSlope: -0.057035863
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.19019775
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

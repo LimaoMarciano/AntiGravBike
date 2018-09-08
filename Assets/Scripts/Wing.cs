@@ -6,84 +6,91 @@ public class Wing : MonoBehaviour {
 
 
     public Rigidbody rb;
-
-    public AnimationCurve liftCoefficientCurve;
-    public float wingArea = 1.0f;
-    public float wingAspectRatio = 1.0f;
+    public WingProfile wingProfile;
     public Vector3 wind = Vector3.zero;
-    public float rotationAngle = 20.0f;
+    public bool isDebugRayAllowed = false;
 
     private Vector3 initialRotation;
-    private Vector3 velocity;
-    private Vector3 lastPosition;
-    private float lastLift = 0;
-
-    private Vector3 localVelocity;
-    public Vector3 LocalVelocity
-    {
-        get { return localVelocity; }
-    }
-
-    private Vector3 chordAirVelocity;
-    public Vector3 ChordAirVelocity
-    {
-        get { return chordAirVelocity; }
-    }
+    private float sqrWingSpan;
 
     private float angleOfAttack;
+    private Vector3 liftForce;
+    private Vector3 inducedDragForce;
+    private Vector3 resultantForce;
+
+    //Public getters
     public float AngleOfAttack
     {
         get { return angleOfAttack; }
     }
 
-    private Vector3 liftForce;
+    public Vector3 LiftForce
+    {
+        get { return liftForce; }
+    }
+
+    public Vector3 InducedDragForce
+    {
+        get { return inducedDragForce; }
+    }
+
+    public Vector3 ResultantForce
+    {
+        get { return resultantForce; }
+    }
 
     private void Start()
     {
-        lastPosition = transform.position;
         initialRotation = transform.localRotation.eulerAngles;
+        sqrWingSpan = (wingProfile.WingSpan * wingProfile.WingSpan) * Mathf.PI;
     }
 
-    public Vector3 CalculateLiftForce ()
+    public Vector3 CalculateLiftForce (Vector3 airVelocity)
     {
-        Vector3 velocity = (transform.position - lastPosition + wind) / Time.deltaTime;
-        lastPosition = transform.position;
-
-        //velocity = rb.GetPointVelocity(transform.position);
-
-        localVelocity = transform.InverseTransformDirection(velocity);
-        chordAirVelocity = new Vector3(0, localVelocity.y, localVelocity.z);
+        //Calculates wind direction and angle relative to the wing
+        Vector3 localVelocity = transform.InverseTransformDirection(airVelocity);
+        Vector3 chordAirVelocity = new Vector3(0, localVelocity.y, localVelocity.z);
         angleOfAttack = Vector3.SignedAngle(Vector3.forward, chordAirVelocity, Vector3.right);
 
-        float cl = liftCoefficientCurve.Evaluate(angleOfAttack);
-        float lift = 0.5f * localVelocity.sqrMagnitude * wingArea * cl;
-
-
-
-        //Induced drag coefficient
-        float dci = (cl * cl) / (Mathf.PI * wingAspectRatio);
-
-        //Vector3 liftDirection = Vector3.Cross(velocity, transform.right).normalized;
-        Vector3 liftDirection = transform.up;
+        //Calculates lift force
+        float cl = wingProfile.GetLiftCoefficient(angleOfAttack);
+        float lift = 0.5f * localVelocity.sqrMagnitude * wingProfile.WingArea * cl;
+        Vector3 liftDirection = Vector3.Cross(airVelocity, transform.right).normalized;
         liftForce = lift * liftDirection;
+        
+        //Induced drag calculation
+        if (localVelocity.z != 0)
+        {
+            float dynamicPressure = (localVelocity.z * localVelocity.z) * 0.5f;
+            float inducedDrag = (lift * lift) / (dynamicPressure * sqrWingSpan);
+            inducedDragForce = inducedDrag * -airVelocity.normalized;
+        }
 
-        Debug.DrawRay(transform.position, liftForce * 0.1f, Color.blue);
-        Debug.DrawRay(transform.position, velocity * 0.1f, Color.cyan);
+        resultantForce = liftForce + inducedDragForce;
+        return resultantForce;
 
-        return liftForce;
     }
+
+#if UNITY_EDITOR
+    void LateUpdate()
+    {
+        if (isDebugRayAllowed)
+        {
+            Debug.DrawRay(transform.position, liftForce * 0.1f, Color.cyan);
+            Debug.DrawRay(transform.position, inducedDragForce * 0.1f, Color.red);
+            Debug.DrawRay(transform.position, resultantForce * 0.1f, Color.blue);
+        }
+    }
+#endif
 
     public void RotateWing (float input)
     {
         //TODO: Change this to use quaternions entirely
         //Temporally using Y axis for rotation because of gimbal lock issues.
-        Vector3 rotation = new Vector3(0, input * rotationAngle, 0);
+        Vector3 rotation = new Vector3(0, input * wingProfile.RotationAngle, 0);
         transform.localRotation = Quaternion.Euler(initialRotation + rotation);
     }
 
-    private void FixedUpdate()
-    {
-        
-    }
+    
 
 }

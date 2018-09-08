@@ -14,9 +14,21 @@ public class Bike : MonoBehaviour {
     public float rudderInput = 0;
     public float engineInput = 0;
 
+    private DirectionalDrag directionalDrag;
+
 	// Use this for initialization
 	void Start () {
         rb.centerOfMass = transform.InverseTransformPoint(centerOfMass.position);
+        directionalDrag = GetComponent<DirectionalDrag>();
+
+        if (directionalDrag == null)
+        {
+            Debug.LogWarning("Directional drag component missing. Will use Rigidbody drag.");
+        }
+        else
+        {
+            rb.drag = 0;
+        }
 	}
 	
 	// Update is called once per frame
@@ -32,16 +44,22 @@ public class Bike : MonoBehaviour {
     void FixedUpdate()
     {
 
-        for (int i = 0; i < wings.Length; i++)
+        if (directionalDrag)
         {
-            Vector3 force = wings[i].CalculateLiftForce();
-            rb.AddForceAtPosition(force, wings[i].transform.position);
+            Vector3 dragForce = directionalDrag.CalculateDrag(rb.velocity);
+            rb.AddForce(dragForce);
         }
 
-        for (int j = 0; j < rudders.Length; j++)
+        CalculateWingsLift(wings);
+        CalculateWingsLift(rudders);
+    }
+
+    void CalculateWingsLift (Wing[] wings)
+    {
+        for (int i = 0; i < wings.Length; i++)
         {
-            Vector3 force = rudders[j].CalculateLiftForce();
-            rb.AddForceAtPosition(force, rudders[j].transform.position);
+            Vector3 force = wings[i].CalculateLiftForce(rb.GetPointVelocity(wings[i].transform.position));
+            rb.AddForceAtPosition(force, wings[i].transform.position);
         }
     }
 }
