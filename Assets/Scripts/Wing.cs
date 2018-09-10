@@ -10,7 +10,7 @@ public class Wing : MonoBehaviour {
     public Vector3 wind = Vector3.zero;
     public bool isDebugRayAllowed = false;
 
-    private Vector3 initialRotation;
+    private Quaternion initialRotation;
     private float sqrWingSpan;
 
     private float angleOfAttack;
@@ -41,7 +41,7 @@ public class Wing : MonoBehaviour {
 
     private void Start()
     {
-        initialRotation = transform.localRotation.eulerAngles;
+        initialRotation = transform.localRotation;
         sqrWingSpan = (wingProfile.WingSpan * wingProfile.WingSpan) * Mathf.PI;
     }
 
@@ -85,10 +85,7 @@ public class Wing : MonoBehaviour {
 
     public void RotateWing (float input)
     {
-        //TODO: Change this to use quaternions entirely
-        //Temporally using Y axis for rotation because of gimbal lock issues.
-        Vector3 rotation = new Vector3(0, input * wingProfile.RotationAngle, 0);
-        transform.localRotation = Quaternion.Euler(initialRotation + rotation);
+        transform.localRotation = initialRotation * Quaternion.Euler(input * wingProfile.RotationAngle, 0, 0);
     }
 
     

@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof (Rigidbody))]
 public class Engine : MonoBehaviour {
 
     public float maxPower = 20.0f;
 
-    private Rigidbody rb;
+    public Rigidbody rb;
     public float input = 0;
 
 	// Use this for initialization
 	void Start () {
-        rb = GetComponent<Rigidbody>();
+        //rb = GetComponent<Rigidbody>();
 	}
 	
 	// Update is called once per frame
@@ -20,7 +19,7 @@ public class Engine : MonoBehaviour {
 
         if (input != 0)
         {
-            rb.AddForce(maxPower * input * transform.forward);
+            rb.AddForceAtPosition (maxPower * input * transform.forward, transform.position);
         }
 	}
 }

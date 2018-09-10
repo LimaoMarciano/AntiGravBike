@@ -14,7 +14,7 @@ public class BikeController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         bike.rudderInput = Input.GetAxis("Horizontal");
-        bike.engineInput = Input.GetAxis("Vertical");
+        bike.engineInput = Input.GetAxis("Accelerator") - Input.GetAxis("Brakes");
 	}
 
 }

@@ -8,8 +8,9 @@ public class Bike : MonoBehaviour {
     public Transform centerOfMass;
 
     public Engine engine;
-    public Wing[] wings;
-    public Wing[] rudders;
+    private Wing[] wings;
+    //public Wing[] rudders;
+    private RotationalComponent[] rotationals;
 
     public float rudderInput = 0;
     public float engineInput = 0;
@@ -20,6 +21,9 @@ public class Bike : MonoBehaviour {
 	void Start () {
         rb.centerOfMass = transform.InverseTransformPoint(centerOfMass.position);
         directionalDrag = GetComponent<DirectionalDrag>();
+
+        wings = GetComponentsInChildren<Wing>();
+        rotationals = GetComponentsInChildren<RotationalComponent>();
 
         if (directionalDrag == null)
         {
@@ -33,9 +37,14 @@ public class Bike : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        for (int i = 0; i < rudders.Length; i++)
+        //for (int i = 0; i < rudders.Length; i++)
+        //{
+        //    rudders[i].RotateWing(rudderInput);
+        //}
+
+        for (int i = 0; i < rotationals.Length; i++)
         {
-            rudders[i].RotateWing(rudderInput);
+            rotationals[i].Rotate(rudderInput);
         }
 
         engine.input = engineInput;
@@ -51,7 +60,7 @@ public class Bike : MonoBehaviour {
         }
 
         CalculateWingsLift(wings);
-        CalculateWingsLift(rudders);
+        //CalculateWingsLift(rudders);
     }
 
     void CalculateWingsLift (Wing[] wings)
